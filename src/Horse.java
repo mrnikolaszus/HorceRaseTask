@@ -1,21 +1,14 @@
 public class Horse implements Runnable {
     @Override
     public void run() {
-
-        while(Main.getWinner()==null){
-
-            if(this.distance >= trackDistance ){
-                if(this.distance > trackDistance){
-
-                Main.setWinner(this);
-                    System.out.println(Main.getWinner().getName() + " was the first who cross finish and "+ Main.getWinner().getName() +" is RACE WINNER ");}
-                break;
-            }
-
+        Thread current = Thread.currentThread();
+        while(!current.isInterrupted()){
+            if(Main.getWinner()!=null){current.interrupt();}
+            if(distance>=trackDistance){Main.setWinner(this);}
             try {
                 Thread.sleep(200);
             } catch (InterruptedException e) {
-                System.out.println("Interrupted exception ignored");
+                break;
             }
             this.distance = this.distance + this.getSpeed();
             System.out.println(this.getName() + " passed meters: " + this.distance);
