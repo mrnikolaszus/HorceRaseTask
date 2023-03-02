@@ -1,7 +1,5 @@
-import java.util.ArrayList;
-
 public class Track {
-    int distance;
+    protected int distance;
     public Track(int distance) {
         this.distance = distance;
     }

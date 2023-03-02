@@ -1,12 +1,18 @@
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Scanner;
+import java.util.concurrent.CountDownLatch;
 
 public class Main {
-    static private  Horse winner = null;
+    static private volatile Horse winner = null;
 
     static public  void setWinner(Horse a) {
         if (winner == null) {
-            winner = a;
+            synchronized (Main.class) {
+                if (winner == null) {
+                    winner = a;
+                }
+            }
         } else {
             System.out.println("Winner is: " + Main.getWinner().getName());
         }
@@ -16,23 +22,22 @@ public class Main {
         }
 
     public static void main(String[] args) {
-
-
-
         Track track = new Track(100);
-
-        ArrayList<Thread> racingHorses= new ArrayList<Thread>(Arrays.asList(
-                new Thread(new Horse("Speedy", 10, track)),
-                new Thread(new Horse("Mustang", 14, track)),
-                new Thread(new Horse("Wind", 13, track)),
-                new Thread(new Horse("Mooo", 5, track)),
-                new Thread(new Horse("Pony", 8, track)),
-                new Thread(new Horse("Steed", 12, track))
+        final CountDownLatch countDownLatch = new CountDownLatch(1);
+        ArrayList<Thread> racingHorses= new ArrayList<>(Arrays.asList(
+                new Thread(new Horse("Speedy", 10, track, countDownLatch)),
+                new Thread(new Horse("Mustang", 14, track, countDownLatch)),
+                new Thread(new Horse("Wind", 13, track, countDownLatch)),
+                new Thread(new Horse("Mooo", 5, track, countDownLatch)),
+                new Thread(new Horse("Pony", 8, track, countDownLatch)),
+                new Thread(new Horse("Steed", 12, track, countDownLatch))
                 ));
 
         racingHorses.forEach(Thread::start);
-
-
+        final Scanner scanner = new Scanner(System.in);
+        System.out.println("Press Enter to start the race: ");
+        scanner.nextLine();
+        countDownLatch.countDown();
         }
 
 
